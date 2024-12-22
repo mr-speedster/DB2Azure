@@ -1,0 +1,3 @@
+pyodbc
+psycopg[binary]
+azure-storage-blob
