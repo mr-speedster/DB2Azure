@@ -33,3 +33,21 @@ jobs:
       - name: Build DB2Azure package
         run: |
           python setup.py sdist bdist_wheel
+
+      # Publish to PyPI
+      - name: Publish to PyPI
+        if: github.event_name == 'push'  # Ensure secrets are only used for push events
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          python -m pip install --upgrade twine
+          twine upload dist/*
+
+      # Verify package upload (optional step)
+      - name: Verify package on PyPI
+        run: |
+          pip install --no-cache-dir DB2Azure
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
