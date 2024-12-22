@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='DB2Azure',
-    version='0.1.4',
+    version='0.1.5',
     description='Load data from on-prem SQL or PostgreSQL databases to Azure Storage as JSON or CSV.',
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'pyodbc',
-        'psycopg2',
+        'psycopg[binary]',
         'azure-storage-blob',
     ],
     classifiers=[
