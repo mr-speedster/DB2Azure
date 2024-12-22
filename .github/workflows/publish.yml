@@ -5,7 +5,7 @@ on:
     branches:
       - master  # Trigger the workflow when code is pushed to the main branch
     tags:
-      - 'v*'  # Trigger on tag push with a version format like v1.0.0
+      - 'v*.*.*'  # Trigger on tag push with a version format like v1.0.0
 
 jobs:
   build:
