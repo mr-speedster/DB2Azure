@@ -1,2 +1,2 @@
-from .sql.sql_loader import SQLLoader
-from .postgre.postgre_loader import PostgreLoader
+from .sql_loader.sql_loader import SQLLoader
+from .postgre_loader.postgre_loader import PostgreLoader
