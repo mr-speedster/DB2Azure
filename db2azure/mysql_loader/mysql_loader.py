@@ -1,18 +1,18 @@
-import pyodbc
+import pymysql
 import json
 import csv
 from io import StringIO
 from azure.storage.blob import BlobClient
 
-class SQLLoader:
+class MySQLLoader:
     @staticmethod
-    def load_to_json(sql_query, connection_string, container_name, folder_path, file_name, azure_blob_url, sas_token):
+    def load_to_json(sql_query, connection_details, container_name, folder_path, file_name, azure_blob_url, sas_token):
         try:
-            # Connect to SQL Server and execute the query
-            conn = pyodbc.connect(connection_string)
+            # Connect to MySQL server and execute the query
+            conn = pymysql.connect(**connection_details)
             cursor = conn.cursor()
             cursor.execute(sql_query)
-            columns = [column[0] for column in cursor.description]
+            columns = [desc[0] for desc in cursor.description]
             rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
             conn.close()
 
@@ -45,13 +45,13 @@ class SQLLoader:
             }
 
     @staticmethod
-    def load_to_csv(sql_query, connection_string, container_name, folder_path, file_name, azure_blob_url, sas_token):
+    def load_to_csv(sql_query, connection_details, container_name, folder_path, file_name, azure_blob_url, sas_token):
         try:
-            # Connect to the database and execute the query
-            conn = pyodbc.connect(connection_string)
+            # Connect to MySQL server and execute the query
+            conn = pymysql.connect(**connection_details)
             cursor = conn.cursor()
             cursor.execute(sql_query)
-            columns = [column[0] for column in cursor.description]
+            columns = [desc[0] for desc in cursor.description]
             rows = cursor.fetchall()
             conn.close()
 
