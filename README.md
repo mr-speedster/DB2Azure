@@ -8,6 +8,7 @@
 DB2Azure is a Python package designed to streamline the process of loading data from SQL Server (MSSQL) and PostgreSQL databases to Azure Blob Storage in both JSON and CSV formats. This package simplifies the data extraction and upload processes with separate modules for SQL Server (`SQLLoader`) and PostgreSQL (`PostgreLoader`), enabling efficient and seamless integration with Azure Blob Storage.
 
 ## Table of Contents
+
 - [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -26,7 +27,8 @@ DB2Azure is a Python package designed to streamline the process of loading data 
 
 DB2Azure helps automate the process of extracting data from SQL Server and PostgreSQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format. The package includes two main modules for SQL Server (`SQLLoader`) and PostgreSQL (`PostgreLoader`), each providing methods for executing SQL queries and transferring the data to Azure Blob Storage.
 
-### Key Features:
+### Key Features
+
 - **SQL Server Support**: Extracts data from Microsoft SQL Server databases using `pyodbc`.
 - **PostgreSQL Support**: Extracts data from PostgreSQL databases using `psycopg`.
 - **Azure Blob Storage Upload**: Uploads data as JSON or CSV to Azure Blob Storage using the `azure-storage-blob`.
@@ -55,7 +57,7 @@ pip install .
 
 To use the SQL Server loader, you can use the `SQLLoader` class in the `db2azure` module. The `SQLLoader` class allows you to execute SQL queries and upload the resulting data to Azure Blob Storage in either JSON or CSV format.
 
-#### Example:
+#### Example
 
 ```python
 from db2azure import SQLLoader
@@ -87,7 +89,7 @@ print("CSV Upload Status:", csv_status)
 
 To use the PostgreSQL loader, you can use the `PostgreLoader` class in the `db2azure` module. The `PostgreLoader` class operates similarly to `SQLLoader`, but it works with PostgreSQL databases.
 
-#### Example:
+#### Example
 
 ```python
 from db2azure import PostgreLoader
@@ -126,18 +128,18 @@ print("CSV Upload Status:", csv_status)
 ### `SQLLoader`
 
 - **`load_to_json`**: Loads data from SQL Server to a JSON file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_string`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
-    
+  - Parameters: `sql_query`, `connection_string`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
+
 - **`load_to_csv`**: Loads data from SQL Server to a CSV file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_string`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
+  - Parameters: `sql_query`, `connection_string`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
 
 ### `PostgreLoader`
 
 - **`load_to_json`**: Loads data from PostgreSQL to a JSON file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
-    
+  - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
+
 - **`load_to_csv`**: Loads data from PostgreSQL to a CSV file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
+  - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
 
 ## Configuration
 
