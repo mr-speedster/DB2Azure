@@ -3,28 +3,43 @@ import csv
 from io import StringIO
 from azure.storage.blob import BlobClient
 import psycopg
+from os import sep
 
 class PostgreLoader:
+
+    @staticmethod
+    def connect_and_query(connection_params, sql_query):
+        with psycopg.connect(**connection_params) as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(sql_query)
+                columns = [desc[0] for desc in cursor.description]
+                rows = cursor.fetchall()
+        return rows, columns
+
+    @staticmethod
+    def format_path(path):
+        if not path.endswith(sep):
+            path += sep
+        return path
+
+    @staticmethod
+    def create_blob_client(azure_blob_url, container_name, folder_path, file_name, sas_token):
+        blob_url = f'{azure_blob_url}/{container_name}/{folder_path}{file_name}'
+        blob_client = BlobClient.from_blob_url(blob_url, credential=sas_token)
+
     @staticmethod
     def load_to_json(sql_query, connection_params, container_name, folder_path, file_name, azure_blob_url, sas_token):
         try:
-            # Connect to PostgreSQL and execute the query
-            with psycopg.connect(**connection_params) as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(sql_query)
-                    columns = [desc[0] for desc in cursor.description]
-                    rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            rows, columns = PostgreLoader.connect_and_query(connection_params, sql_query)
+            rows = [dict(zip(columns, row)) for row in rows]
 
             # Convert rows to JSON
             json_data = json.dumps(rows, indent=4)
 
-            # Ensure folder path ends with '/'
-            if not folder_path.endswith('/'):
-                folder_path += '/'
+            folder_path = PostgreLoader.format_path(folder_path)
 
-            # Create BlobClient with SAS token
-            blob_url = f"{azure_blob_url}/{container_name}/{folder_path}{file_name}"
-            blob_client = BlobClient.from_blob_url(blob_url, credential=sas_token)
+            # Upload to Azure Blob Storage
+            blob_client = PostgreLoader.create_blob_client(azure_blob_url, container_name, folder_path, file_name, sas_token)
             blob_client.upload_blob(json_data, overwrite=True)
 
             # Return status
@@ -46,12 +61,7 @@ class PostgreLoader:
     @staticmethod
     def load_to_csv(sql_query, connection_params, container_name, folder_path, file_name, azure_blob_url, sas_token):
         try:
-            # Connect to PostgreSQL and execute the query
-            with psycopg.connect(**connection_params) as conn:
-                with conn.cursor() as cursor:
-                    cursor.execute(sql_query)
-                    columns = [desc[0] for desc in cursor.description]
-                    rows = cursor.fetchall()
+            rows, columns = PostgreLoader.connect_and_query(connection_params, sql_query)
 
             # Create CSV content
             output = StringIO()
@@ -59,19 +69,13 @@ class PostgreLoader:
             writer.writerow(columns)
             writer.writerows(rows)
             output.seek(0)
+            csv_data = output.getvalue()
 
-            # Ensure folder path ends with '/'
-            if not folder_path.endswith('/'):
-                folder_path += '/'
+            folder_path = PostgreLoader.format_path(folder_path)
 
-            # Construct the Blob URL
-            blob_url = f"{azure_blob_url}/{container_name}/{folder_path}{file_name}"
-            
-            # Create BlobClient with SAS token
-            blob_client = BlobClient.from_blob_url(blob_url, credential=sas_token)
-            
-            # Upload CSV content to Azure Blob Storage
-            blob_client.upload_blob(output.getvalue(), overwrite=True)
+            # Upload to Azure Blob Storage
+            blob_client = PostgreLoader.create_blob_client(azure_blob_url, container_name, folder_path, file_name, sas_token)
+            blob_client.upload_blob(csv_data, overwrite=True)
             
             # Return status
             return {
