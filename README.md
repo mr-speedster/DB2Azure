@@ -12,12 +12,9 @@ DB2Azure is a Python package designed to streamline the process of loading data 
 - [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
-  - [SQL Server Loader](#sql-server-loader)
-  - [PostgreSQL Loader](#postgresql-loader)
-- [Methods](#methods)
-  - [SQLLoader](#sqlloader)
-  - [PostgreLoader](#postgreloader)
-- [Configuration](#configuration)
+  - [Setup Reader](#setup-reader)
+  - [Setup UploadManager](#setup-uploadmanager)
+  - [Methods and Operation](#methods-and-operation)
 - [Error Handling](#error-handling)
 - [License](#license)
 - [Contributing](#contributing)
@@ -25,14 +22,28 @@ DB2Azure is a Python package designed to streamline the process of loading data 
 
 ## Description
 
-DB2Azure helps automate the process of extracting data from SQL Server and PostgreSQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format. The package includes two main modules for SQL Server (`SQLLoader`) and PostgreSQL (`PostgreLoader`), each providing methods for executing SQL queries and transferring the data to Azure Blob Storage.
+DB2Azure helps automate the process of extracting data from SQL Server and PostgreSQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format.  
+More Data Sources and Data Formats will be available in upcoming releases.
+
+The UploadManager is the main utility of the package.  
+The user needs to initialize the UploadManager with the desired configurations before pushing content.  
+This involves setting up a desired Reader and Converter.  
+Users would only need to call the `push_up` function of the UploadManager. In case fine-grain control is desired, the component functions could be used.  
+
+The package consists of two sub-modules, `readers` and `converters`.  
+Readers contain modules to read data from various Data Sources.  
+Converters help convert the data to the desired format.
+The UploadManager can be configured with a mix of any data source with any data converter to create the desired configuration.
 
 ### Key Features
 
-- **SQL Server Support**: Extracts data from Microsoft SQL Server databases using `pyodbc`.
-- **PostgreSQL Support**: Extracts data from PostgreSQL databases using `psycopg`.
-- **Azure Blob Storage Upload**: Uploads data as JSON or CSV to Azure Blob Storage using the `azure-storage-blob`.
-- **Flexibility**: Allows customization of folder path, file name, and blob URL.
+- **Extendable Server Support**: The data flow is architected in a way that any Server can be configured to be read and used.
+  - **SQL Server Support**: Extracts data from Microsoft SQL Server databases using `pyodbc`.
+  - **PostgreSQL Support**: Extracts data from PostgreSQL databases using `psycopg`.
+- **Extendable Data Type Support**: The data can be formatted into configurable types currently limitted to JSON and CSV.
+- **Azure Blob Storage Upload**: Uploads data to Azure Blob Storage using the `azure-storage-blob`.
+- **Flexibility**: Allows customization of folder path, file name, and blob URL.  
+  Allows easy addition of other data types as well as data sources.
 - **Error Handling**: Provides detailed error messages in case of failures.
 
 ## Installation
@@ -53,51 +64,22 @@ pip install .
 
 ## Usage
 
-### SQL Server Loader
+### Setup Reader
 
-To use the SQL Server loader, you can use the `SQLLoader` class in the `db2azure` module. The `SQLLoader` class allows you to execute SQL queries and upload the resulting data to Azure Blob Storage in either JSON or CSV format.
+Import reader from the available readers in the reader sub-module and initialize it.  
+Readers are expected to have a single parameter that would contain any required configurations.  
 
-#### Example
+- **SQL Server**: Use the `connection_string` parameter to configure the connection to your SQL Server.
+- **PostgreSQL**: Use the `connection_params` dictionary to configure the connection to your PostgreSQL database.
 
 ```python
-from db2azure import SQLLoader
+from db2azure.readers import SqlReader, PostgreReader
 
-# SQL Query
-query = "SELECT [UserID], [FirstName], [LastName], [Email], [Age] FROM [SampleDB].[dbo].[Users]"
-
-# SQL Server connection string
+# SQL Server
 sql_conn = r"Driver=<driver>;Server=<server_name>;Database=<database>;Trusted_Connection=yes;"
+sql_reader = SqlReader(sql_conn)
 
-# Azure Blob Storage parameters
-container_name = "your_container"
-folder_path = "your_folder"
-json_file_name = "your_file.json"
-csv_file_name = "your_file.csv"
-azure_blob_url = "https://your_account_name.blob.core.windows.net"
-sas_token = "your_sas_token"
-
-# Load to JSON
-json_status = SQLLoader.load_to_json(query, sql_conn, container_name, folder_path, json_file_name, azure_blob_url, sas_token)
-print("JSON Upload Status:", json_status)
-
-# Load to CSV
-csv_status = SQLLoader.load_to_csv(query, sql_conn, container_name, folder_path, csv_file_name, azure_blob_url, sas_token)
-print("CSV Upload Status:", csv_status)
-```
-
-### PostgreSQL Loader
-
-To use the PostgreSQL loader, you can use the `PostgreLoader` class in the `db2azure` module. The `PostgreLoader` class operates similarly to `SQLLoader`, but it works with PostgreSQL databases.
-
-#### Example
-
-```python
-from db2azure import PostgreLoader
-
-# SQL Query
-query = "SELECT user_id, first_name, last_name, email, age FROM public.users;"
-
-# PostgreSQL connection parameters
+# Postgre Server
 connection_params = {
     "host": "localhost",      # e.g., "localhost" or an IP address
     "port": "5432",           # default PostgreSQL port
@@ -105,49 +87,62 @@ connection_params = {
     "user": "*****",          # PostgreSQL username
     "password": "*****"       # PostgreSQL password
 }
-
-# Azure Blob Storage parameters
-container_name = "your_container"
-folder_path = "your_folder"
-json_file_name = "your_file.json"
-csv_file_name = "your_file.csv"
-azure_blob_url = "https://your_account_name.blob.core.windows.net"
-sas_token = "your_sas_token"
-
-# Load to JSON
-json_status = PostgreLoader.load_to_json(query, connection_params, container_name, folder_path, json_file_name, azure_blob_url, sas_token)
-print("JSON Upload Status:", json_status)
-
-# Load to CSV
-csv_status = PostgreLoader.load_to_csv(query, connection_params, container_name, folder_path, csv_file_name, azure_blob_url, sas_token)
-print("CSV Upload Status:", csv_status)
+psg_reader = PostgreReader(connection_params)
 ```
 
-## Methods
+### Setup UploadManager
 
-### `SQLLoader`
+Import the UploadManager and initialize it with the Azure configurations.  
+The converters are available in the converers sub-module and need not be instantiated.
 
-- **`load_to_json`**: Loads data from SQL Server to a JSON file in Azure Blob Storage.
-  - Parameters: `sql_query`, `connection_string`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
-
-- **`load_to_csv`**: Loads data from SQL Server to a CSV file in Azure Blob Storage.
-  - Parameters: `sql_query`, `connection_string`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
-
-### `PostgreLoader`
-
-- **`load_to_json`**: Loads data from PostgreSQL to a JSON file in Azure Blob Storage.
-  - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
-
-- **`load_to_csv`**: Loads data from PostgreSQL to a CSV file in Azure Blob Storage.
-  - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
-
-## Configuration
-
-For both SQL Server and PostgreSQL loaders, you will need to provide the following configuration:
-
-- **SQL Server**: Use the `connection_string` parameter to configure the connection to your SQL Server.
-- **PostgreSQL**: Use the `connection_params` dictionary to configure the connection to your PostgreSQL database.
 - **Azure Blob Storage**: Provide `container_name`, `folder_path`, `file_name`, `azure_blob_url`, and `sas_token` to specify where and how the data should be uploaded to Azure Blob Storage.
+
+```python
+from db2azure.converters import JsonConverter, CsvConverter
+from db2azure import UploadManager
+
+azure_configs = {
+  'azure_blob_url' = 'https://your_account_name.blob.core.windows.net'
+  'container_name' = 'your_container'
+  'folder_path' = 'your_folder'
+  'file_name' = 'your_file.json'
+  'sas_token' = 'your_sas_token'
+}
+
+# setup UploadManager
+uploader = UploadManager(reader, JsonConverter, azure_configs)
+uploader = UploadManager(reader, CsvConverter, azuer_configs)
+```
+
+### Methods and Operation
+
+```python
+query = 'SELECT * FROM x'
+
+# push data in one go
+uploader.push_up(query)
+
+# step by step workflow for fine-grain control
+rows, columns = uploader.read(query)
+data = uploader.convert(rows, columns)
+result = uploader.upload(data)
+```
+
+The UploadManager consists of the following methods:
+
+- `push_up(query: str)`  
+  Perhaps the only one you'll need.  
+  The push_up method requires a string parameter, `query`. It makes use of the UploadManager configurations to read data using the query provided, convert the data using the configured converter and finally push it to Azure Blob Storage.  
+  The push_up method makes use of the following methods to perform the operation. A user can use these methods to assert control over the operations if required.  
+- `read(query: str)`  
+  The read method requires a string parameter, `query`.  
+  It makes use of the Reader configurations to read data using the query provided and will return a double of rows and columns.  
+- `convert(rows, columns)`  
+  The convert method makes use of the values returned by the read method and converts it into the desired format.  
+  It returns a data object which can be sent to Azure.
+- `upload(data)`  
+  The upload method initializes a blob_client from the configurations available and uses this client to push the data.  
+  It finally returns a dict that contains a report with the following keys: status, message, rows_uploaded, file_name, container_name, folder_path.  
 
 ## Error Handling
 
