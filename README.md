@@ -5,7 +5,7 @@
 
 # DB2Azure
 
-DB2Azure is a Python package designed to streamline the process of loading data from SQL Server (MSSQL) and PostgreSQL databases to Azure Blob Storage in both JSON and CSV formats. This package simplifies the data extraction and upload processes with separate modules for SQL Server (`SQLLoader`) and PostgreSQL (`PostgreLoader`), enabling efficient and seamless integration with Azure Blob Storage.
+DB2Azure is a Python package designed to streamline the process of loading data from SQL Server (MSSQL), PostgreSQL, and MySQL databases to Azure Blob Storage in both JSON and CSV formats. This package simplifies the data extraction and upload processes with separate modules for SQL Server (`SQLLoader`), PostgreSQL (`PostgreLoader`), and MySQL (`MySQLLoader`), enabling efficient and seamless integration with Azure Blob Storage.
 
 ## Table of Contents
 - [Description](#description)
@@ -13,9 +13,11 @@ DB2Azure is a Python package designed to streamline the process of loading data 
 - [Usage](#usage)
   - [SQL Server Loader](#sql-server-loader)
   - [PostgreSQL Loader](#postgresql-loader)
+  - [MySQL Loader](#mysql-loader)
 - [Methods](#methods)
   - [SQLLoader](#sqlloader)
   - [PostgreLoader](#postgreloader)
+  - [MySQLLoader](#mysqlloader)
 - [Configuration](#configuration)
 - [Error Handling](#error-handling)
 - [License](#license)
@@ -24,11 +26,12 @@ DB2Azure is a Python package designed to streamline the process of loading data 
 
 ## Description
 
-DB2Azure helps automate the process of extracting data from SQL Server and PostgreSQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format. The package includes two main modules for SQL Server (`SQLLoader`) and PostgreSQL (`PostgreLoader`), each providing methods for executing SQL queries and transferring the data to Azure Blob Storage.
+DB2Azure helps automate the process of extracting data from SQL Server, PostgreSQL, and MySQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format. The package includes three main modules for SQL Server (`SQLLoader`), PostgreSQL (`PostgreLoader`), and MySQL (`MySQLLoader`), each providing methods for executing SQL queries and transferring the data to Azure Blob Storage.
 
 ### Key Features:
 - **SQL Server Support**: Extracts data from Microsoft SQL Server databases using `pyodbc`.
 - **PostgreSQL Support**: Extracts data from PostgreSQL databases using `psycopg`.
+- **MySQL Support**: Extracts data from MySQL databases using `pymysql`.
 - **Azure Blob Storage Upload**: Uploads data as JSON or CSV to Azure Blob Storage using the `azure-storage-blob`.
 - **Flexibility**: Allows customization of folder path, file name, and blob URL.
 - **Error Handling**: Provides detailed error messages in case of failures.
@@ -121,6 +124,44 @@ csv_status = PostgreLoader.load_to_csv(query, connection_params, container_name,
 print("CSV Upload Status:", csv_status)
 ```
 
+### MySQL Loader
+
+To use the MySQL loader, you can use the `MySQLLoader` class in the `db2azure` module. The `MySQLLoader` class works similarly to `SQLLoader` and `PostgreLoader`, but it is designed to work with MySQL databases.
+
+#### Example:
+
+```python
+from db2azure import MySQLLoader
+
+# SQL Query
+query = "SELECT user_id, first_name, last_name, email, age FROM SampleDB.Users;"
+
+# MySQL connection parameters
+connection_params = {
+    "host": "localhost",      # e.g., "localhost" or an IP address
+    "port": "3306",           # default MySQL port
+    "database": "SampleDB",     # name of the database
+    "user": "*****",          # MySQL username
+    "password": "*****"       # MySQL password
+}
+
+# Azure Blob Storage parameters
+container_name = "your_container"
+folder_path = "your_folder"
+json_file_name = "your_file.json"
+csv_file_name = "your_file.csv"
+azure_blob_url = "https://your_account_name.blob.core.windows.net"
+sas_token = "your_sas_token"
+
+# Load to JSON
+json_status = MySQLLoader.load_to_json(query, connection_params, container_name, folder_path, json_file_name, azure_blob_url, sas_token)
+print("JSON Upload Status:", json_status)
+
+# Load to CSV
+csv_status = MySQLLoader.load_to_csv(query, connection_params, container_name, folder_path, csv_file_name, azure_blob_url, sas_token)
+print("CSV Upload Status:", csv_status)
+```
+
 ## Methods
 
 ### `SQLLoader`
@@ -139,12 +180,21 @@ print("CSV Upload Status:", csv_status)
 - **`load_to_csv`**: Loads data from PostgreSQL to a CSV file in Azure Blob Storage.
     - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
 
+### `MySQLLoader`
+
+- **`load_to_json`**: Loads data from MySQL to a JSON file in Azure Blob Storage.
+    - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
+    
+- **`load_to_csv`**: Loads data from MySQL to a CSV file in Azure Blob Storage.
+    - Parameters: `sql_query`, `connection_params`, `container_name`, `folder_path`, `file_name`, `azure_blob_url`, `sas_token`
+
 ## Configuration
 
-For both SQL Server and PostgreSQL loaders, you will need to provide the following configuration:
+For each loader (SQL Server, PostgreSQL, MySQL), you will need to provide the following configuration:
 
 - **SQL Server**: Use the `connection_string` parameter to configure the connection to your SQL Server.
 - **PostgreSQL**: Use the `connection_params` dictionary to configure the connection to your PostgreSQL database.
+- **MySQL**: Use the `connection_params` dictionary to configure the connection to your MySQL database.
 - **Azure Blob Storage**: Provide `container_name`, `folder_path`, `file_name`, `azure_blob_url`, and `sas_token` to specify where and how the data should be uploaded to Azure Blob Storage.
 
 ## Error Handling
@@ -161,7 +211,6 @@ Example error response:
   "status": "error",
   "message": "Connection failed: 'Your error message here'"
 }
-
 ```
 
 ## License
@@ -176,4 +225,5 @@ We welcome contributions! Feel free to open an issue or submit a pull request fo
 
 - **pyodbc**: A Python DB API 2.0 interface for ODBC databases, used for connecting to SQL Server.
 - **psycopg**: A PostgreSQL database adapter for Python, used for connecting to PostgreSQL.
+- **pymysql**: MySQL database adapter for Python, used for connecting to MySQL.
 - **azure-storage-blob**: Azure SDK for Python, used for uploading files to Azure Blob Storage.
