@@ -17,7 +17,6 @@ DB2Azure is a Python package designed to streamline the process of loading data 
   - [MySQL Loader](#mysql-loader)
 - [Methods](#methods)
   - [MSSQLLoader](#mssqlloader)
-  - [MSSQLLoader](#mssqlloader)
   - [PostgreLoader](#postgreloader)
   - [MySQLLoader](#mysqlloader)
 - [Configuration](#configuration)
@@ -66,13 +65,12 @@ To use the SQL Server loader, you can use the `MSSQLLoader` class in the `db2azu
 
 ```python
 from db2azure import MSSQLLoader
-from db2azure import MSSQLLoader
 
 # SQL Query
 query = "SELECT [UserID],[FirstName],[LastName],[Email],[Age] FROM [SampleDB].[dbo].[Users]"
 
 # SQL Server connection string
-sql_conn = r"Driver={SQL Server};Server=DESKTOP-0GU1E1O\\MSSQLSERVER02;Database=SampleDB;Trusted_Connection=yes;"
+sql_conn = r"Driver=<driver>;Server=<server_name>;Database=<database>;Trusted_Connection=yes;"
 
 # Azure Blob Storage configurations
 azure_config_json = {
@@ -93,18 +91,15 @@ azure_config_csv = {
 
 # Load to JSON
 json_status = MSSQLLoader.load_to_json(query, sql_conn, azure_config_json)
-json_status = MSSQLLoader.load_to_json(query, sql_conn, azure_config_json)
 print("JSON Upload Status:", json_status)
 
 # Load to CSV
-csv_status = MSSQLLoader.load_to_csv(query, sql_conn, azure_config_csv)
 csv_status = MSSQLLoader.load_to_csv(query, sql_conn, azure_config_csv)
 print("CSV Upload Status:", csv_status)
 ```
 
 ### PostgreSQL Loader
 
-To use the PostgreSQL loader, you can use the `PostgreLoader` class in the `db2azure` module. The `PostgreLoader` class operates similarly to `MSSQLLoader`, but it works with PostgreSQL databases.
 To use the PostgreSQL loader, you can use the `PostgreLoader` class in the `db2azure` module. The `PostgreLoader` class operates similarly to `MSSQLLoader`, but it works with PostgreSQL databases.
 
 #### Example:
@@ -144,18 +139,15 @@ azure_config_csv = {
 
 # Load to JSON
 json_status = PostgreLoader.load_to_json(query, connection_params, azure_config_json)
-json_status = PostgreLoader.load_to_json(query, connection_params, azure_config_json)
 print("JSON Upload Status:", json_status)
 
 # Load to CSV
-csv_status = PostgreLoader.load_to_csv(query, connection_params, azure_config_csv)
 csv_status = PostgreLoader.load_to_csv(query, connection_params, azure_config_csv)
 print("CSV Upload Status:", csv_status)
 ```
 
 ### MySQL Loader
 
-To use the MySQL loader, you can use the `MySQLLoader` class in the `db2azure` module. The `MySQLLoader` class works similarly to `MSSQLLoader` and `PostgreLoader`, but it is designed to work with MySQL databases.
 To use the MySQL loader, you can use the `MySQLLoader` class in the `db2azure` module. The `MySQLLoader` class works similarly to `MSSQLLoader` and `PostgreLoader`, but it is designed to work with MySQL databases.
 
 #### Example:
@@ -194,11 +186,9 @@ azure_config_csv = {
 
 # Load to JSON
 json_status = MySQLLoader.load_to_json(query, mysql_conn, azure_config_json)
-json_status = MySQLLoader.load_to_json(query, mysql_conn, azure_config_json)
 print("JSON Upload Status:", json_status)
 
 # Load to CSV
-csv_status = MySQLLoader.load_to_csv(query, mysql_conn, azure_config_csv)
 csv_status = MySQLLoader.load_to_csv(query, mysql_conn, azure_config_csv)
 print("CSV Upload Status:", csv_status)
 ```
@@ -210,30 +200,24 @@ print("CSV Upload Status:", csv_status)
 
 - **`load_to_json`**: Loads data from SQL Server to a JSON file in Azure Blob Storage.
     - Parameters: `sql_query`, `connection_string`, `azure_config`
-    - Parameters: `sql_query`, `connection_string`, `azure_config`
     
 - **`load_to_csv`**: Loads data from SQL Server to a CSV file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_string`, `azure_config`
     - Parameters: `sql_query`, `connection_string`, `azure_config`
 
 ### `PostgreLoader`
 
 - **`load_to_json`**: Loads data from PostgreSQL to a JSON file in Azure Blob Storage.
     - Parameters: `sql_query`, `connection_params`, `azure_config`
-    - Parameters: `sql_query`, `connection_params`, `azure_config`
     
 - **`load_to_csv`**: Loads data from PostgreSQL to a CSV file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_params`, `azure_config`
     - Parameters: `sql_query`, `connection_params`, `azure_config`
 
 ### `MySQLLoader`
 
 - **`load_to_json`**: Loads data from MySQL to a JSON file in Azure Blob Storage.
     - Parameters: `sql_query`, `connection_params`, `azure_config`
-    - Parameters: `sql_query`, `connection_params`, `azure_config`
     
 - **`load_to_csv`**: Loads data from MySQL to a CSV file in Azure Blob Storage.
-    - Parameters: `sql_query`, `connection_params`, `azure_config`
     - Parameters: `sql_query`, `connection_params`, `azure_config`
 
 ## Configuration
