@@ -6,7 +6,6 @@
 # DB2Azure
 
 DB2Azure is a Python package designed to streamline the process of loading data from SQL Server (MSSQL), PostgreSQL, and MySQL databases to Azure Blob Storage in both JSON and CSV formats. This package simplifies the data extraction and upload processes with separate modules for SQL Server (`MSSQLLoader`), PostgreSQL (`PostgreLoader`), and MySQL (`MySQLLoader`), enabling efficient and seamless integration with Azure Blob Storage.
-DB2Azure is a Python package designed to streamline the process of loading data from SQL Server (MSSQL), PostgreSQL, and MySQL databases to Azure Blob Storage in both JSON and CSV formats. This package simplifies the data extraction and upload processes with separate modules for SQL Server (`MSSQLLoader`), PostgreSQL (`PostgreLoader`), and MySQL (`MySQLLoader`), enabling efficient and seamless integration with Azure Blob Storage.
 
 ## Table of Contents
 - [Description](#description)
@@ -195,7 +194,6 @@ print("CSV Upload Status:", csv_status)
 
 ## Methods
 
-### `MSSQLLoader`
 ### `MSSQLLoader`
 
 - **`load_to_json`**: Loads data from SQL Server to a JSON file in Azure Blob Storage.
