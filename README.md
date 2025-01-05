@@ -27,7 +27,6 @@ DB2Azure is a Python package designed to streamline the process of loading data 
 ## Description
 
 DB2Azure helps automate the process of extracting data from SQL Server, PostgreSQL, and MySQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format. The package includes three main modules for SQL Server (`MSSQLLoader`), PostgreSQL (`PostgreLoader`), and MySQL (`MySQLLoader`), each providing methods for executing SQL queries and transferring the data to Azure Blob Storage.
-DB2Azure helps automate the process of extracting data from SQL Server, PostgreSQL, and MySQL databases and uploading it directly to Azure Blob Storage in either JSON or CSV format. The package includes three main modules for SQL Server (`MSSQLLoader`), PostgreSQL (`PostgreLoader`), and MySQL (`MySQLLoader`), each providing methods for executing SQL queries and transferring the data to Azure Blob Storage.
 
 ### Key Features:
 - **SQL Server Support**: Extracts data from Microsoft SQL Server databases using `pyodbc`.
@@ -57,7 +56,6 @@ pip install .
 
 ### SQL Server Loader
 
-To use the SQL Server loader, you can use the `MSSQLLoader` class in the `db2azure` module. The `MSSQLLoader` class allows you to execute SQL queries and upload the resulting data to Azure Blob Storage in either JSON or CSV format.
 To use the SQL Server loader, you can use the `MSSQLLoader` class in the `db2azure` module. The `MSSQLLoader` class allows you to execute SQL queries and upload the resulting data to Azure Blob Storage in either JSON or CSV format.
 
 #### Example:
@@ -225,7 +223,6 @@ For each loader (SQL Server, PostgreSQL, MySQL), you will need to provide the fo
 - **SQL Server**: Use the `connection_string` parameter to configure the connection to your SQL Server.
 - **PostgreSQL**: Use the `connection_params` dictionary to configure the connection to your PostgreSQL database.
 - **MySQL**: Use the `connection_params` dictionary to configure the connection to your MySQL database.
-- **Azure Blob Storage**: Provide the `azure_config` dictionary, containing `container_name`, `folder_path`, `file_name`, `azure_blob_url`, and `sas_token`, to specify where and how the data should be uploaded to Azure Blob Storage.
 - **Azure Blob Storage**: Provide the `azure_config` dictionary, containing `container_name`, `folder_path`, `file_name`, `azure_blob_url`, and `sas_token`, to specify where and how the data should be uploaded to Azure Blob Storage.
 
 ## Error Handling
